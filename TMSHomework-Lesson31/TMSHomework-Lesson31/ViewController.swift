@@ -20,31 +20,25 @@ class ViewController: UITableViewController {
                                       message: "Add a new car",
                                       preferredStyle: .alert)
         
-        alert.addTextField()
-        alert.addTextFieldForInt64()
-        alert.addTextFieldForInt64()
-        alert.addTextFieldForDouble()
-        
-        alert.textFields?[0].placeholder = "Car name"
-        alert.textFields?[1].placeholder = "Max speed"
-        alert.textFields?[2].placeholder = "Car weight"
-        alert.textFields?[3].placeholder = "0-100"
-        
         let saveAction = UIAlertAction(title: "Save", style: .default) { [weak self] action in
             
             guard let nameTextField = alert.textFields?[0], let nameToSave = nameTextField.text else {
+                self?.showErrorAlert()
                 return
             }
             
-            guard let maxSpeedTextField = alert.textFields?[1], let maxSpeedToSave = Int64(maxSpeedTextField.text!) else {
+            guard let maxSpeedTextField = alert.textFields?[1], let maxSpeedToSave = Int64(maxSpeedTextField.text ?? "No data") else {
+                self?.showErrorAlert()
                 return
             }
             
-            guard let weightTextField = alert.textFields?[2], let weightToSave = Int64(weightTextField.text!) else {
+            guard let weightTextField = alert.textFields?[2], let weightToSave = Int64(weightTextField.text ?? "No data") else {
+                self?.showErrorAlert()
                 return
             }
             
-            guard let accelerationTextField = alert.textFields?[3], let accelerationToSave = Double(accelerationTextField.text!) else {
+            guard let accelerationTextField = alert.textFields?[3], let accelerationToSave = Double(accelerationTextField.text ?? "No data") else {
+                self?.showErrorAlert()
                 return
             }
             
@@ -54,7 +48,23 @@ class ViewController: UITableViewController {
             
         }
         
+        saveAction.isEnabled = false
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+
+        alert.addTextField { textField in
+            NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: textField, queue: OperationQueue.main, using: {_ in
+                saveAction.isEnabled = textField.text?.count ?? 0 > 0
+            })
+        }
+        alert.addTextFieldForInt64()
+        alert.addTextFieldForInt64()
+        alert.addTextFieldForDouble()
+        
+        alert.textFields?[0].placeholder = "Car name"
+        alert.textFields?[1].placeholder = "Max speed"
+        alert.textFields?[2].placeholder = "Car weight"
+        alert.textFields?[3].placeholder = "0-100"
         
         alert.addAction(saveAction)
         alert.addAction(cancelAction)
@@ -62,7 +72,17 @@ class ViewController: UITableViewController {
         present(alert, animated: true)
     }
     
+    func showErrorAlert() {
+        let errorAlert = UIAlertController(title: "Error", message: "Car was not added", preferredStyle: .alert)
+        let errorAlertAction = UIAlertAction(title: "OK", style: .cancel)
+        errorAlert.addAction(errorAlertAction)
+        present(errorAlert, animated: true)
+    }
     
+}
+
+// MARK: - TableViewDelegate & TableViewDataSource methods
+extension ViewController {
     
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
@@ -108,8 +128,8 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let message = """
-        Max speed: \(CoreDataManager.shared.readMaxSpeed(at: indexPath.row)) km/h\n
-        Car weight: \(CoreDataManager.shared.readWeight(at: indexPath.row)) kg\n
+        Max speed: \(CoreDataManager.shared.readMaxSpeed(at: indexPath.row)) km/h
+        Car weight: \(CoreDataManager.shared.readWeight(at: indexPath.row)) kg
         Acceleration 0-100: \(CoreDataManager.shared.readAcceleration(at: indexPath.row)) seconds
         """
         

@@ -11,7 +11,6 @@ import CoreData
 class CoreDataManager {
     
     private init() { }
-    
     private let queue = DispatchQueue(label: "CoreData")
     static let shared = CoreDataManager()
     
@@ -23,6 +22,7 @@ class CoreDataManager {
         return results
     }()
     
+    // MARK: - Database modification methods
     func save(name: String, maxSpeed: Int64, weight: Int64, acceleration: Double, completion: @escaping () -> ()) {
         
         let managedContext = self.persistentContainer.viewContext
