@@ -71,6 +71,15 @@ class RealmManager {
         completion()
     }
     
+    func readCar(id: ObjectId) -> Car {
+        guard let realm = RealmManager.shared.realm else {
+            delegate?.presentFailureAlert("Something wrong with database")
+            return Car(name: "No car", maxSpeed: 0, weight: 0, acceleration: 0)
+        }
+        
+        return realm.object(ofType: Car.self, forPrimaryKey: id) ?? Car(name: "No car", maxSpeed: 0, weight: 0, acceleration: 0)
+    }
+    
     func readAllCarsFromDatabase() {
         guard let realm else {
             delegate?.presentFailureAlert("Can't get saved values")

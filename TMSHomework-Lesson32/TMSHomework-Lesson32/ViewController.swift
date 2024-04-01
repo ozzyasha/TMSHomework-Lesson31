@@ -128,18 +128,13 @@ extension ViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let carId = RealmManager.shared.cars[indexPath.row]._id
 
-        guard let realm = RealmManager.shared.realm else {
-            self.presentFailureAlert("Something wrong with database")
-            return
-        }
-
         let message = """
-        Max speed: \(realm.object(ofType: Car.self, forPrimaryKey: carId)?.maxSpeed ?? 0) km/h
-        Car weight: \(realm.object(ofType: Car.self, forPrimaryKey: carId)?.weight ?? 0) kg
-        Acceleration 0-100: \(realm.object(ofType: Car.self, forPrimaryKey: carId)?.acceleration ?? 0.0) seconds
+        Max speed: \(RealmManager.shared.readCar(id: carId).maxSpeed) km/h
+        Car weight: \(RealmManager.shared.readCar(id: carId).weight) kg
+        Acceleration 0-100: \(RealmManager.shared.readCar(id: carId).acceleration) seconds
         """
 
-        let alert = UIAlertController(title: realm.object(ofType: Car.self, forPrimaryKey: carId)?.name ?? "",
+        let alert = UIAlertController(title: RealmManager.shared.readCar(id: carId).name,
                                       message: message,
                                       preferredStyle: .alert)
 
