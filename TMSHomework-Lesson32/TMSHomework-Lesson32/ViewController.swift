@@ -8,18 +8,11 @@
 import RealmSwift
 import UIKit
 
-class ViewController: UITableViewController {
-    var cars: [Car] = []
+protocol AlertDelegate: AnyObject {
+    func presentFailureAlert(_ message: String)
+}
 
-    private lazy var realm: Realm? = {
-        do {
-            let _realm = try Realm()
-            return _realm
-        } catch {
-            print(error.localizedDescription)
-            return nil
-        }
-    }()
+class ViewController: UITableViewController, AlertDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,20 +21,8 @@ class ViewController: UITableViewController {
 
     private func setupTableView() {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-
-        guard let realm else {
-            presentFailureAlert("Can't get saved values")
-            return
-        }
-
-        cars = realm.objects(Car.self).map { $0 }
-    }
-
-    private func presentFailureAlert(_ message: String) {
-        let alert = UIAlertController(title: "Failure", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
-        alert.addAction(okAction)
-        present(alert, animated: true)
+        RealmManager.shared.readAllCarsFromDatabase()
+        RealmManager.shared.delegate = self
     }
 
     @IBAction func addCar(_ sender: UIBarButtonItem) {
@@ -70,9 +51,9 @@ class ViewController: UITableViewController {
                 return
             }
 
-            self?.addCar(name: nameToSave, maxSpeed: maxSpeedToSave, weight: weightToSave, acceleration: accelerationToSave)
-
-            self?.tableView.reloadData()
+            RealmManager.shared.saveCar(name: nameToSave, maxSpeed: maxSpeedToSave, weight: weightToSave, acceleration: accelerationToSave) {
+                self?.tableView.reloadData()
+            }
         }
 
         saveAction.isEnabled = false
@@ -98,23 +79,12 @@ class ViewController: UITableViewController {
 
         present(alert, animated: true)
     }
-
-    private func addCar(name: String, maxSpeed: Int, weight: Int, acceleration: Double) {
-        let carObject = Car(name: name, maxSpeed: maxSpeed, weight: weight, acceleration: acceleration)
-        guard let realm else {
-            presentFailureAlert("Something went wrong with database")
-            return
-        }
-
-        do {
-            try realm.write {
-                realm.add(carObject)
-            }
-            cars.append(carObject)
-            tableView.reloadData()
-        } catch {
-            print(error.localizedDescription)
-        }
+    
+    func presentFailureAlert(_ message: String) {
+        let alert = UIAlertController(title: "Failure", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okAction)
+        present(alert, animated: true)
     }
 }
 
@@ -124,14 +94,14 @@ extension ViewController {
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
         super.tableView(tableView, numberOfRowsInSection: section)
-        return cars.count
+        return RealmManager.shared.cars.count
     }
 
     override func tableView(_ tableView: UITableView,
                             cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         super.tableView(tableView, cellForRowAt: indexPath)
 
-        let car = cars[indexPath.row]
+        let car = RealmManager.shared.cars[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.textLabel?.text = car.name
         return cell
@@ -147,38 +117,19 @@ extension ViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let carId = cars[indexPath.row]._id
-
-            guard let realm else {
-                presentFailureAlert("Something went wrong with database")
-                return
+            let carId = RealmManager.shared.cars[indexPath.row]._id
+            
+            RealmManager.shared.deleteCar(id: carId, indexPath: indexPath) {
+                tableView.reloadData()
             }
-
-            do {
-                let deletingCar = realm.object(ofType: Car.self, forPrimaryKey: carId)
-                guard let deletingCar else {
-                    presentFailureAlert("Can't identify the car")
-                    return
-                }
-                try realm.write {
-                    realm.delete(deletingCar)
-                    self.cars.remove(at: indexPath.row)
-                    self.tableView.reloadData()
-                }
-
-            } catch {
-                presentFailureAlert(error.localizedDescription)
-            }
-
-            tableView.reloadData()
         }
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let carId = cars[indexPath.row]._id
+        let carId = RealmManager.shared.cars[indexPath.row]._id
 
-        guard let realm else {
-            presentFailureAlert("Something went wrong with database")
+        guard let realm = RealmManager.shared.realm else {
+            self.presentFailureAlert("Something wrong with database")
             return
         }
 

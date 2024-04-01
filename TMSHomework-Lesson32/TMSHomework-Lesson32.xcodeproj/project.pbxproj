@@ -17,6 +17,7 @@
 		7A313E8E2BBA022900D3EA83 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 7A313E8D2BBA022900D3EA83 /* RealmSwift */; };
 		7A313E902BBA08BC00D3EA83 /* Car.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A313E8F2BBA08BC00D3EA83 /* Car.swift */; };
 		7ABB48FD2BBA15A500024404 /* AlertControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ABB48FC2BBA15A500024404 /* AlertControllerExtension.swift */; };
+		7AE912D12BBAD98600D11D6D /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE912D02BBAD98600D11D6D /* RealmManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		7A313E842BB9F6DA00D3EA83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A313E8F2BBA08BC00D3EA83 /* Car.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Car.swift; sourceTree = "<group>"; };
 		7ABB48FC2BBA15A500024404 /* AlertControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertControllerExtension.swift; sourceTree = "<group>"; };
+		7AE912D02BBAD98600D11D6D /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,10 +66,11 @@
 		7A313E722BB9F6D700D3EA83 /* TMSHomework-Lesson32 */ = {
 			isa = PBXGroup;
 			children = (
+				7AE912CE2BBAD8DE00D11D6D /* Entities */,
+				7AE912D02BBAD98600D11D6D /* RealmManager.swift */,
 				7A313E732BB9F6D700D3EA83 /* AppDelegate.swift */,
 				7A313E752BB9F6D700D3EA83 /* SceneDelegate.swift */,
 				7A313E772BB9F6D700D3EA83 /* ViewController.swift */,
-				7A313E8F2BBA08BC00D3EA83 /* Car.swift */,
 				7ABB48FC2BBA15A500024404 /* AlertControllerExtension.swift */,
 				7A313E792BB9F6D700D3EA83 /* Main.storyboard */,
 				7A313E7F2BB9F6DA00D3EA83 /* Assets.xcassets */,
@@ -75,6 +78,14 @@
 				7A313E842BB9F6DA00D3EA83 /* Info.plist */,
 			);
 			path = "TMSHomework-Lesson32";
+			sourceTree = "<group>";
+		};
+		7AE912CE2BBAD8DE00D11D6D /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				7A313E8F2BBA08BC00D3EA83 /* Car.swift */,
+			);
+			path = Entities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -160,6 +171,7 @@
 				7ABB48FD2BBA15A500024404 /* AlertControllerExtension.swift in Sources */,
 				7A313E902BBA08BC00D3EA83 /* Car.swift in Sources */,
 				7A313E762BB9F6D700D3EA83 /* SceneDelegate.swift in Sources */,
+				7AE912D12BBAD98600D11D6D /* RealmManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

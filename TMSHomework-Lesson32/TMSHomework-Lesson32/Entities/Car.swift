@@ -14,7 +14,7 @@ class Car: Object {
     @Persisted var maxSpeed: Int
     @Persisted var weight: Int
     @Persisted var acceleration: Double
-    
+
     convenience init(name: String, maxSpeed: Int, weight: Int, acceleration: Double) {
         self.init()
         self.name = name
